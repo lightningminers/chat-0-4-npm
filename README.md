@@ -63,17 +63,31 @@ $ npm i https://github.com/indexzero/forever/tarball/v0.5.6
 $ npm i gitlab:mygitlabuser/myproject
 ```
 
-对于开发本地包，可以使用 `file:` 的方式，如：
+对于开发本地包，可以使用 `file:` 的方式，在包目录创建 `package.json` 如：
+
+```json
+{
+  "name": "query",
+  "main": "index.js",
+  "version": "0.1.0"
+}
+```
+
+然后在应用的目录执行：
+
+```bash
+$ npm i file:./query -p
+```
+
+我们可以看一下应用层的 `package.json` 文件：
 
 ```json
 {
   "dependencies": {
-    "query": "file:./query"
+    "query": "file:query",
   }
 }
 ```
-
-然后在当前目录执行 `npm i` 即可。
 
 另外在额外提一嘴 `package-lock.json`，这是后期 npm 参考 yarn.lock 提供的一个机制，用于保证安装包时的依赖可以保持一致（多人协作时）。
  
