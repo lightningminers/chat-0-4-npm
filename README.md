@@ -95,9 +95,9 @@ $ npm i gitlab:mygitlabuser/myproject
 
 既然说到了 `publish` 额外提一嘴 `.npmignore` 文件，这个文件和 `.gitignore` 文件的作用是相同的，我们可以设想一下，当你对外发布时将不想发布的内容发布了出去，这非常危险，这两个文件就可以控制哪个可以忽略。
 
-> npm start npm stop npm build npm test
+> npm start npm stop npm test
 
-这些都是快捷命令，分别执行 `"scripts"` 中的 `start`，`stop`，`build` 和 `test`。
+这些都是快捷命令，分别执行 `"scripts"` 中的 `start`，`stop`，和 `test`。
 
 > npm help
 
@@ -111,6 +111,9 @@ $ npm help adduser
 
 当模块非常受欢迎时，对于更新作者一般都会发布 `alpha`，`beta` 等版本，这个时候 `dist-tag` 就非常有了，可以列出所有的 tag，如果你想当尝鲜的小白鼠，你就可以来看看对应最新的 tag（标签）。
 
+> npm bin
+
+这个可以显示 npm 安装的可执行文件的目录地址。
 
 > 小提示
 
@@ -125,6 +128,13 @@ sass_binary_site=https://npm.taobao.org/mirrors/node-sass
 
 `config` 命令就是用来配合修改配置的。
 
+npm 5.2.0 版本之后会自动安装 `npx`，这个东西会帮你执行依赖包中的二进制文件，如果你经常使用 `create-react-app` 你会发现它很常见：
+
+```
+$ npx create-react-app my-app
+```
+
+它和 `npm` 之间的关系是有区别的，我们可以理解为 npm 依然是项目管理，而 `npx` 则是在帮我们简化使用命令指令相关的事情。
 
 ## 使用 link 在本地开发 JavaScript 包
 
