@@ -1,0 +1,8 @@
+{
+  "name": "local",
+  "main": "index.js",
+  "version": "0.0.1",
+  "bin": {
+    "icepy": "icepy.js"
+  }
+}

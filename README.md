@@ -152,6 +152,46 @@ $ npx create-react-app my-app
 
 ## 使用 link 在本地开发 JavaScript 包
 
+`link` 命令可以帮助我们模拟包安装后的状态，它会在系统中做一个快捷的映射，这对于测试非常有用。
+
+我们在本地的应用目录中创建一个包叫 `local`，然后输入：
+
+```bash
+$ npm link local
+```
+
+当你使用 debug 来查看时：
+
+![img](./debug.png)
+
+另外如果你开发的是命令行工具，`npm link` 也非常有用，接下来我们对代码做一些改造，创建一个新的文件叫 `icepy.js`：
+
+```js
+#! /usr/bin/env node
+
+console.log("hello icepy");
+```
+
+接着在 `package.json` 文件的 `bin` 字段中填写如下：
+
+```json
+{
+  "bin": {
+    "icepy": "index.js"
+  }
+}
+```
+
+在命令行目录中 `npm link` 一下，这时我们就可以在终端上看一下结果：
+
+![img](./link.png)
+
+> 小提示
+
+当你修改代码后，不需要再重新 npm link ，立即生效。
+
+## 详解 NPM Script 各种钩子的运用
+
 
 
 ## 思考
