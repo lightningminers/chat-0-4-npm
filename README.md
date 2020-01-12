@@ -162,7 +162,7 @@ $ npm link local
 
 当你使用 debug 来查看时：
 
-![img](./debug.png)
+![img](./img/debug.png)
 
 另外如果你开发的是命令行工具，`npm link` 也非常有用，接下来我们对代码做一些改造，创建一个新的文件叫 `icepy.js`：
 
@@ -184,13 +184,156 @@ console.log("hello icepy");
 
 在命令行目录中 `npm link` 一下，这时我们就可以在终端上看一下结果：
 
-![img](./link.png)
+![img](./img/link.png)
 
 > 小提示
 
-当你修改代码后，不需要再重新 npm link ，立即生效。
+当你修改代码后，不需要再重新 npm link ，因为代码的运行结果会立即生效。
 
 ## 详解 NPM Script 各种钩子的运用
+
+我想目前 `npm start` 是社区中使用最多的一个 npm 命令，它可以执行 `package.json` 文件中 `scripts` 配置的脚本：
+
+```json
+{
+  "scripts": {
+    "start": "node ./index.js"
+  }
+}
+```
+
+npm 脚本的原理比较好理解，它会辅助我们新建一个 Shell ，然后在这个 Shell 中执行指定的脚本命令。
+
+> 小提示
+
+这个新建的 Shell 会将当前目录中的 node_modules/.bin 加入到 PATH 中，因此你可以直接使用而无需再用路径的方式，如图：
+
+```json
+{
+  "scripts": {
+    "test": "icepy"
+  }
+}
+```
+
+![img](./img/path.png)
+
+### 解锁运行 npm scripts 的姿势
+
+一般前端或者 Node.js 项目会包括多个 scripts ，这时对于如何将多个命令同时执行或顺序执行，就有了需求。
+
+串行执行的方式：
+
+```bash
+$ npm test && npm start
+```
+
+它的执行顺序会严格按照顺序来执行，也就是说在执行完 `npm test` 之后才会执行 `npm start`。
+
+并行执行的方式：
+
+```bash
+$ npm test & npm start
+```
+
+我们可以看到结果：
+
+![img](./img/o.png)
+
+> 小提示
+
+这个命令的运行其实和 npm 没有关系，更多用法可以参考一下 shell 环境中的运算符。
+
+如果我们配置的命令有很多，这个时候就需要写很多 `npm run`，那有没有更简约的办法？[https://github.com/mysticatea/npm-run-all](https://github.com/mysticatea/npm-run-all) 这个库可以简化你编写的命令。
+
+### 变量配置
+
+目前有些变量是和 `package.json` 有关的，意思就是说当你执行 `npm run` 命令时，如果你的 `package.json` 文件中配置了如下：
+
+```json
+{
+  "name": "chat-0-4-npm",
+  "version": "1.0.0"
+}
+```
+
+那么你在执行的 Shell 环境中可以通过 `process.env.npm_package_name` 和 `process.env.npm_package_version` 来获取，其他变量可以以此类推。
+
+但 `package.json` 中有一个特殊的 `config` 对象，你也可以通过它 `process.env.npm_package_config_port` 来获取。
+
+![img](./img/a.png)
+
+### 生命周期事件
+
+每一次运行的 `run` 它都是有生命周期的，我们可以简单的定义为执行前和执行后，在这个脚本文件我们可以通过 `process.env.npm_lifecycle_event` 来获取当前脚本所处于那个生命周期中（如果你编写的文件分开成了多个文件，那这个变量就没有意义了）。
+
+```json
+{
+  "start": "node ./index.js",
+  "prestart": "node ./index.js",
+  "poststart": "node ./index.js"
+}
+```
+
+![img](./img/b.png)
+
+它的命令分类比较多，还有包的安装前和安装后，比如：`preinstall` 和 `postinstall`，详细的翻译如下：
+
+- prepublish：在发布之前触发
+- prepare：在 prepublish 与 prepublishOnly 之间触发
+- prepublishOnly：在 prepare 和 prepack 之间触发，只有运行 npm publish 才会触发这个命令
+- prepack: 在打包之前运行，触发条件有：（npm pack npm publish 或是安装一个 git 链接的依赖）
+- postpack: 在打包完成之后运行
+- publish, postpublish：发布之后运行
+- preinstall：安装一个包之前运行
+- install, postinstall：安装完成一个包之后运行
+- preuninstall, uninstall：卸载一个包之前运行
+- postuninstall：卸载一个包完成之后运行
+- preversion：更新包的版本之前
+- version：更新包的版本之后，但在提交之前
+- postversion：更新包的版本之后，并且在提交之后
+- pretest, test, posttest：`npm test` 命令的前后
+- prestop, stop, poststop：`npm stop` 命令的前后
+- prestart, start, poststart：`npm start` 命令的前后
+- prerestart, restart, postrestart：`npm restart` 命令的前后，如果没有 `restart` 命令，npm 会默认执行 `stop` 和 `start` 命令
+- preshrinkwrap, shrinkwrap, postshrinkwrap：`npm shrinkwarp` 命令前后
+
+### 传递参数
+
+`npm run` 命令是可以传递参数的，我们需要使用 `--` 分隔符，比如：
+
+```json
+{
+  "scripts": {
+    "start": "node ./foo.js --debug"
+  }
+}
+```
+
+在 JS 文件中，我们可以这样获取：
+
+```js
+console.log(process.argv[2]);
+```
+
+结果：
+
+![img](./img/c.png)
+
+### 命令自动补全
+
+使用 `npm run` 列出所有的命令，如图：
+
+![img](./img/d.png)
+
+集成 npm 提供的 [https://docs.npmjs.com/cli/completion](https://docs.npmjs.com/cli/completion) 到你的 zsh 中。
+
+> 小提示
+
+建议大家安装 zsh 和 [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)，不解释，你用过就知道。
+
+
+## 实战：使用 NPM 完成构建流水线
 
 
 
