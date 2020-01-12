@@ -368,7 +368,8 @@ console.log(process.argv[2]);
 
 ## 实战：使用 NPM 完成构建流水线
 
-关于流程，我们做一个简单的设想，就是构建使用 webpack，对于代码提交要依赖 git hook 做一次前置的检查，这个检查的来源于 eslint，最后使用 prettier 来完成代码的格式化，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境）。
+关于流程，我们做一个简单的设想，使用 webpack 来打包，启用 git hook 在 commit 之前使用 prettier 格式化，然后 eslint 一下给出报告，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境），大概分了四个维度：`构建`，`格式化`，`检查`，`CI/CD`。
+
 
 
 

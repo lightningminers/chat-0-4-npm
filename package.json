@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "prettier": "^1.19.1",
     "query": "file:query",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
@@ -11,13 +12,18 @@
   "devDependencies": {
     "@types/node": "^13.1.6",
     "eslint": "^6.8.0",
-    "husky": "^4.0.7"
+    "husky": "^4.0.7",
+    "lint-staged": "^9.5.0"
   },
   "scripts": {
     "test": "icepy",
-    "start": "node ./foo.js --debug",
+    "start": "node ./module/foo.js --debug",
     "dev": "webpack",
-    "lint": "eslint"
+    "lint": "eslint ./src/**",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "scr/**/*.js": "eslint"
   },
   "repository": {
     "type": "git",
