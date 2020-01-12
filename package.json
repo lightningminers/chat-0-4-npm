@@ -1,21 +1,23 @@
 {
   "name": "chat-0-4-npm",
   "version": "1.0.0",
-  "description": "npm 是伴随着 Node.js 成长的包管理器，最初它只服务于后端开发。早期前端相关的童鞋一直在用 bower 来做包管理，再更早的年代前端会用 Ant 来做管理和构建。",
+  "description": "",
   "main": "index.js",
   "dependencies": {
-    "jquery": "^3.4.1",
     "query": "file:query",
-    "react": "^16.8.5"
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   },
   "devDependencies": {
-    "@types/node": "^13.1.6"
+    "@types/node": "^13.1.6",
+    "eslint": "^6.8.0",
+    "husky": "^4.0.7"
   },
   "scripts": {
     "test": "icepy",
     "start": "node ./foo.js --debug",
-    "build": "e",
-    "install": "foo.js"
+    "dev": "webpack",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,10 @@
   "homepage": "https://github.com/icepy/chat-0-4-npm#readme",
   "config": {
     "port": "8080"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   }
 }

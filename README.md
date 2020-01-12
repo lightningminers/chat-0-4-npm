@@ -332,8 +332,43 @@ console.log(process.argv[2]);
 
 建议大家安装 zsh 和 [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)，不解释，你用过就知道。
 
+### 跨平台兼容性处理
+
+首先 windows 用户推荐使用 git bash ，尽量减少其他问题。对于文件系统，我建议大家尽量使用社区提供的跨平台兼容的包，比如删除文件或目录用 [https://www.npmjs.com/package/del-cli](https://www.npmjs.com/package/del-cli) 来代替 `rm -rf`。
+
+其次关于环境变量可以考虑使用 [https://www.npmjs.com/package/cross-var](https://www.npmjs.com/package/cross-var) 来设置，比如将原来：
+
+```json
+{
+  "scripts": {
+    "test": "NODE_ENV=test node ./index.js"
+  }
+}
+```
+
+改为
+
+```json
+{
+  "scripts": {
+    "test": "cross-env NODE_ENV=test node ./index.js"
+  }
+}
+```
+
+> 小提示
+
+如果你的 npm 命令行很多很长，不妨考虑一下将它们迁移到 .sh 脚本中。
+
+```bash
+#!/usr/bin/env bash
+```
+
+有时间也可以研究一下 shell.js ，比如当你的 npm scripts 越来越复杂时，这不失为一个好的处理方式。最后再提一句，就是我们也可以将跨平台的环境变量依赖，都迁移到一个文件中，然后直接引用不同的文件即可。
 
 ## 实战：使用 NPM 完成构建流水线
+
+关于流程，我们做一个简单的设想，就是构建使用 webpack，对于代码提交要依赖 git hook 做一次前置的检查，这个检查的来源于 eslint，最后使用 prettier 来完成代码的格式化，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境）。
 
 
 
