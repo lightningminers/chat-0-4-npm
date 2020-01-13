@@ -368,9 +368,47 @@ console.log(process.argv[2]);
 
 ## 实战：使用 NPM 完成构建流水线
 
-关于流程，我们做一个简单的设想，使用 webpack 来打包，启用 git hook 在 commit 之前使用 prettier 格式化，然后 eslint 一下给出报告，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境），大概分了四个维度：`构建`，`格式化`，`检查`，`CI/CD`，在真实的情况下，构建这一个部分应该让 CI 来做。
+关于流程，我们做一个简化版的设想，从四个维度（`构建`，`格式化`，`检查`，`CI/CD`）来看这个事情。
 
-首先我们需要安装 `husky` 和 `lint-staged`，这两个包前者可以处理 `git commit` 前置的 hook，后者可以在前者的基础上指定一些配置功能。然后我们需要安装 `eslint` 和 `prettier`，前者可以根据规则对代码进行检查，后者则是可以根据规则对代码进行格式化，这两个包可以配合使用。
+> 简化版，主要是让你清楚这么做的意义
+
+使用 webpack 来打包，启用 git hook 在 commit 之前使用 prettier 格式化，然后 eslint 一下做出检测，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境），在真实的情况下，构建这一个部分应该让 CI 来做。
+
+首先我们需要安装 `webpack` 和 `webpack-cli`，这是我们做构建的一个基础，创建好 `webpack.config.js` 文件，然后做出配置。
+
+```js
+const path = require("path");
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.js"
+  }
+};
+
+```
+
+做一个简单的例子：
+
+```js
+// query.js
+module.exports = function() {
+  console.log("icepy");
+};
+```
+
+```js
+// index.js
+const query = require("./query");
+
+query();
+
+```
+
+然后我们需要安装 `husky` 和 `lint-staged`，这两个包前者可以处理 `git commit` 前置的 hook，后者可以在前者的基础上指定一些配置功能。
+
+最后我们需要安装 `eslint` 和 `prettier`，前者可以根据规则对代码进行检查，后者则是可以根据规则对代码进行格式化，这两个包可以配合使用。
 
 创建 `.eslintrc` 配置规则，如下：
 
@@ -386,7 +424,11 @@ console.log(process.argv[2]);
 }
 ```
 
-创建 `.eslintignore` 对于一些文件进行忽略。
+创建 `.eslintignore` 对于一些文件或目录进行忽略。
+
+在使用 `prettier` 之前，如果有风格类的错误，你能得到：
+
+![img](./img/f.png)
 
 接着在 `package.json` 文件中进行配置 git hook 的处理方式：
 
@@ -401,10 +443,31 @@ console.log(process.argv[2]);
     }
   },
   "lint-staged": {
-    "./src/**/*.js": "eslint"
-  }
+    "./src/**/*.js": [
+      "prettier --write",
+      "eslint"
+    ]
+  },
 }
 ```
+
+
+
+只有 `src` 目录中的文件被修改了才会触发，先执行 `prettier` 然后再执行 `eslint`。
+
+> 小提示
+
+创建 `.prettierrc` 文件来对 `prettier` 进行配置。
+
+> 小提示
+
+下面 CI/CD 的部分，如果你不会配置，可以直接找运维。
+
+在服务器上安装好 `gitlab runner` ，在项目中创建一个 `gitlab-ci.yml` 文件，最简单的办法就是利用 `dev` 和 `tag` 来做区分，比如你 `git tag 1.0.0`，这跟分支上就直接走 build 流程，然后利用 scp 把构建好的文件，直接丢到 CDN 服务器上（依赖 tag 的变量值）。
+
+如果你开发的是后端程序，最好是搞两台机器做一个集群，发布时，一台一台的发，至少能保证服务的延续性。
+
+最后不管是前端还是后端，对于发布我们应该需要有敬畏之心，慎重而为之。
 
 ## 思考
 
