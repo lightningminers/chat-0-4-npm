@@ -21,8 +21,13 @@
     "dev": "webpack",
     "precommit": "lint-staged"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
-    "scr/**/*.js": "eslint"
+    "./src/**/*.js": ["prettier --write", "eslint"]
   },
   "repository": {
     "type": "git",
@@ -37,10 +42,5 @@
   "homepage": "https://github.com/icepy/chat-0-4-npm#readme",
   "config": {
     "port": "8080"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }

@@ -368,10 +368,43 @@ console.log(process.argv[2]);
 
 ## 实战：使用 NPM 完成构建流水线
 
-关于流程，我们做一个简单的设想，使用 webpack 来打包，启用 git hook 在 commit 之前使用 prettier 格式化，然后 eslint 一下给出报告，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境），大概分了四个维度：`构建`，`格式化`，`检查`，`CI/CD`。
+关于流程，我们做一个简单的设想，使用 webpack 来打包，启用 git hook 在 commit 之前使用 prettier 格式化，然后 eslint 一下给出报告，代码提交后触发 gitlab 的 runner 完成发布（你可以做一个 dev 和 prod 环境），大概分了四个维度：`构建`，`格式化`，`检查`，`CI/CD`，在真实的情况下，构建这一个部分应该让 CI 来做。
 
+首先我们需要安装 `husky` 和 `lint-staged`，这两个包前者可以处理 `git commit` 前置的 hook，后者可以在前者的基础上指定一些配置功能。然后我们需要安装 `eslint` 和 `prettier`，前者可以根据规则对代码进行检查，后者则是可以根据规则对代码进行格式化，这两个包可以配合使用。
 
+创建 `.eslintrc` 配置规则，如下：
 
+```json
+{
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"]
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
+  }
+}
+```
+
+创建 `.eslintignore` 对于一些文件进行忽略。
+
+接着在 `package.json` 文件中进行配置 git hook 的处理方式：
+
+```json
+{
+  "scripts": {
+    "precommit": "lint-staged"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "./src/**/*.js": "eslint"
+  }
+}
+```
 
 ## 思考
 
